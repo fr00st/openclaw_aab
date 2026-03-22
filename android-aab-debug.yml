@@ -1,0 +1,36 @@
+name: Android AAB Debug
+
+on:
+workflow_dispatch:
+push:
+paths:
+- "apps/android/**"
+- ".github/workflows/android-aab-debug.yml"
+
+jobs:
+build-aab:
+runs-on: ubuntu-latest
+defaults:
+run:
+working-directory: apps/android
+
+steps:
+- name: Checkout
+uses: actions/checkout@v4
+
+- name: Set up JDK 17
+uses: actions/setup-java@v4
+with:
+distribution: temurin
+java-version: "17"
+cache: gradle
+
+- name: Build Play Debug AAB
+run: ./gradlew :app:bundlePlayDebug --stacktrace
+
+- name: Upload AAB artifact
+uses: actions/upload-artifact@v4
+with:
+name: openclaw-play-debug-aab
+path: apps/android/app/build/outputs/bundle/playDebug/*.aab
+if-no-files-found: error
